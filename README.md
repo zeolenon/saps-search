@@ -75,3 +75,38 @@ Para integrar com Google Sheets, o agente pode ler do intervalo autorizado com a
         print(result)
 
 Veja SKILL.md para instruções de agente e docs/ para rotas, autenticação e fluxos. Consulte SECURITY.md antes de automatizar em ambiente compartilhado.
+
+## Integração com cliente SAPS existente
+
+O adaptador `ExistingSessionSearch` reutiliza uma sessão já aberta do cliente
+OpenClaw, sem ler arquivos de credenciais, renovar login ou persistir cookies:
+
+    from saps_search.legacy import ExistingSessionSearch
+    search = ExistingSessionSearch(cliente_saps_existente)
+    result = search.search_client(cnpj="00000000000000")
+    result = search.search_building(name="EMPRESA FICTICIA", city="CIDADE")
+
+Instale o pacote no mesmo ambiente Python que executa o cliente existente.
+O cliente integrado oferece os métodos `search_client` e `search_building`;
+se o pacote não estiver instalado, apenas esses métodos novos falham na importação.
+Listagem, monitoramento, vistoria e homologação existentes permanecem disponíveis.
+O adaptador depende dos atributos privados `_client` e `_cookies` do cliente
+OpenClaw e deve ser revalidado se essa interface mudar. Ele não fecha o cliente
+que recebeu. Sessão ausente/expirada gera erro, sem autenticação automática.
+O adaptador preserva a configuração TLS do cliente recebido; o cliente independente
+usa verificação TLS. Prefira o cliente independente para novos operadores.
+
+As latências documentadas são observações históricas de poucos testes,
+não metas nem garantias. Os testes automatizados usam transporte HTTP simulado,
+HTML fictício e nenhum acesso ao SAPS. Execute:
+
+    python -m unittest discover -s tests -v
+
+Eles verificam filtros, multiplicidade, paginação, deduplicação, timeout sem
+repetição e sessão expirada sem novo login. Não validam disponibilidade,
+autorização ou mudanças atuais no backend institucional.
+
+Para incorporar os métodos ao checkout OpenClaw correspondente, revise e aplique
+`integrations/openclaw-search.patch` na raiz da skill SAPS. O patch contém apenas
+os dois métodos novos; não inclui o cliente legado nem suas rotinas de credenciais.
+Em versões divergentes, adapte os métodos manualmente após revisar o contexto.

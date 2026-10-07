@@ -198,7 +198,7 @@ class SAPSClient:
             if not self._authenticated:
                 self.login()
             try:
-                response = self._http.post(
+                response = self._post_search(
                     url,
                     data=data,
                     headers={
@@ -241,6 +241,9 @@ class SAPSClient:
             )
 
         raise SAPSAuthError("Não foi possível autenticar para esta busca.")
+
+    def _post_search(self, url: str, **kwargs) -> httpx.Response:
+        return self._http.post(url, **kwargs)
 
     def _is_login_response(self, response: httpx.Response) -> bool:
         location = response.headers.get("location", "").casefold()

@@ -1,0 +1,21 @@
+--- a/scripts/saps_client.py
++++ b/scripts/saps_client.py
+@@ -282,4 +282,18 @@
+         return r
+ 
++    def search_client(self, *, cnpj=None, name=None, redesim=None):
++        """Read-only lookup using the existing session; never renew login."""
++        from saps_search.legacy import ExistingSessionSearch
++        return ExistingSessionSearch(self).search_client(
++            cnpj=cnpj, name=name, redesim=redesim,
++        )
++
++    def search_building(self, *, cnpj=None, name=None, **filters):
++        """Read-only lookup, 90-second read timeout, existing session only."""
++        from saps_search.legacy import ExistingSessionSearch
++        return ExistingSessionSearch(self).search_building(
++            cnpj=cnpj, name=name, **filters,
++        )
++
+     @staticmethod
+     def _parse_projects(html: str) -> list[dict]:
