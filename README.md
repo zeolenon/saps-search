@@ -110,3 +110,16 @@ Para incorporar os métodos ao checkout OpenClaw correspondente, revise e apliqu
 `integrations/openclaw-search.patch` na raiz da skill SAPS. O patch contém apenas
 os dois métodos novos; não inclui o cliente legado nem suas rotinas de credenciais.
 Em versões divergentes, adapte os métodos manualmente após revisar o contexto.
+
+
+Se a instalação de usuário não colocar `saps-search` no PATH, execute a CLI
+pelo mesmo interpretador Python, sem alterar o PATH ou definir PYTHONPATH:
+
+    python3 -m saps_search.cli --help
+    python3 -m saps_search.cli client --cnpj 00000000000000
+
+Para instalar somente no perfil Python do operador (quando habilitado pelo
+ambiente), use `python3 -m pip install --user .`. Não use `--upgrade` ou
+`--break-system-packages` como parte da integração. Em ambiente virtual,
+use `python -m pip install .` sem `--user`. O pacote precisa estar disponível
+no interpretador que executa os scripts SAPS, e não apenas em outro ambiente.
